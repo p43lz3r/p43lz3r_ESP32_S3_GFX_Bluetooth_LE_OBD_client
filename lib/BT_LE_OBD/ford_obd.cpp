@@ -13,6 +13,7 @@ extern void updateEngineLoad(float load);
 extern void updateRPM(int rpm);
 extern void updateSpeed(int speed);
 extern void updateBoost(float boost);
+extern void updateModuleVoltage(float voltage);
 
 // Global instance
 FordOBD fordOBD;
@@ -629,6 +630,9 @@ void FordOBD::processResponse()
 
 void FordOBD::parseOBDData(String data)
 {
+  
+  Serial.println("🧪 parseOBDData() called with: " + data);
+
   if (data.length() < 6)
     return;
 
@@ -650,6 +654,8 @@ void FordOBD::parseOBDData(String data)
         {
           int temp = hexToInt(data.substring(4, 6)) - 40;
           result = String(temp);
+
+          updateCoolantTemp((float)temp);
         }
       }
       else if (pid == "5C")
@@ -661,6 +667,17 @@ void FordOBD::parseOBDData(String data)
 
           // Update Display (hopefully)
           updateEngineOilTemp((float)temp);
+        }
+      }
+      else if (pid == "42")
+      { // Control Module Voltage (NEW!)
+        if (data.length() >= 8)
+        {
+          float voltage = ((hexToInt(data.substring(4, 6)) << 8) + hexToInt(data.substring(6, 8))) / 1000.0;
+          result = String(voltage, 2);
+
+          // Optional: Add display update
+          updateModuleVoltage(voltage); // If you create this function
         }
       }
       else if (pid == "0F")

@@ -65,7 +65,7 @@ struct PIDConfig
 static PIDConfig userPIDs[] = {
     // Essential engine monitoring - Fast updates for performance
     //{true,  "010C\r", "RPM", "rpm", "🔧", 1000, 0, false},           // 1Hz - Essential
-    //{true,  "010D\r", "Speed", "km/h", "🏎️", 1000, 0, false},        // 1Hz - Essential
+    {true,  "010D\r", "Speed", "km/h", "🏎️", 250, 0, false},        // 1Hz - Essential
     {true, "0111\r", "Throttle", "%", "🎯", 500, 0, false}, // 2Hz - Important for turbo
 
     //// EcoBoost Turbo monitoring - Critical for Ford performance
@@ -77,7 +77,7 @@ static PIDConfig userPIDs[] = {
     {true, "0105\r", "Coolant", "°C", "🌡️", 3000, 0, false},    // 0.33Hz - Thermal
     {true, "015C\r", "Engine Oil", "°C", "🌡️", 3000, 0, false}, // 0.33Hz - Thermal
     {true, "010F\r", "Intake Air", "°C", "🌬️", 3000, 0, false}, // 0.33Hz - Charge air temp
-    {true, "010D\r", "Speed", "-", "🌬️", 500, 0, false},    
+    {true, "0142\r", "ModuleVoltage", "V", "🌬️", 500, 0, false},    
     // Fuel system - Ford specific monitoring
     //{false, "010A\r", "Fuel Pressure", "kPa", "⛽", 2000, 0, false}, // Higher pressure in EcoBoost
     //{false, "0106\r", "Fuel Trim ST", "%", "🔧", 5000, 0, false},    // Short term

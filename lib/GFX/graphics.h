@@ -1,6 +1,9 @@
 #pragma once
 #include <Arduino.h>
 #include "font_manager.h"
+#include "image_manager.h"  // Add image support
+#include "color_correction.h"  // Add this include
+
 
 // RGB565 color definitions
 #define COLOR_BLACK     0x0000
@@ -25,11 +28,14 @@ class Graphics {
 private:
     uint16_t* frame_buffer;
     FontManager* font_manager;
+    ImageManager image_manager;  // Add image manager
     
     // Text state
     int16_t cursor_x, cursor_y;
     uint16_t text_color, text_bg_color;
     bool text_bg_enabled;
+    ColorCorrection color_correction;  // Add this line
+    bool correction_enabled = false;   // Add this line
     
 public:
     // Constructor/Destructor
@@ -39,6 +45,11 @@ public:
     // Display initialization
     bool begin(uint16_t* fb, FontManager* fm);
     
+    void enableColorCorrection(bool enable = true);
+    ColorCorrection& getColorCorrection() { return color_correction; }
+    void applyColorCorrection();
+    void setDisplayTemperature(int8_t temp);
+
     // Basic drawing functions
     void fillScreen(uint16_t color);
     void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
@@ -47,6 +58,15 @@ public:
     void drawRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
     void drawCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color);
     void fillCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color);
+    
+    // Image drawing functions - ADD THESE
+    void drawImage(int16_t x, int16_t y, const Image& image);
+    void drawImage(int16_t x, int16_t y, const Image& image, const ImageDrawOptions& options);
+    void drawRGB565(int16_t x, int16_t y, uint16_t width, uint16_t height, const uint16_t* data);
+    void drawRGB565(int16_t x, int16_t y, uint16_t width, uint16_t height, const uint16_t* data, uint16_t transparent_color);
+    void drawBitmap(int16_t x, int16_t y, uint16_t width, uint16_t height, const uint8_t* bitmap, uint16_t fg_color, uint16_t bg_color);
+    void drawBitmap(int16_t x, int16_t y, uint16_t width, uint16_t height, const uint8_t* bitmap, uint16_t fg_color);
+    void drawImageScaled(int16_t x, int16_t y, const Image& image, float scale_x, float scale_y);
     
     // Text functions
     void setCursor(int16_t x, int16_t y);
@@ -85,6 +105,12 @@ public:
     // Color utilities
     uint16_t color565(uint8_t r, uint8_t g, uint8_t b);
     void color565ToRGB(uint16_t color, uint8_t* r, uint8_t* g, uint8_t* b);
+    
+    // Image manager access
+    ImageManager& getImageManager() { return image_manager; }
+    
+    // Get frame buffer for direct access
+    uint16_t* getFrameBuffer() { return frame_buffer; }
     
 private:
     // Internal character drawing

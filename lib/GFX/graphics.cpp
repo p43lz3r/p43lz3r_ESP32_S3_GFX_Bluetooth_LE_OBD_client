@@ -33,6 +33,12 @@ bool Graphics::begin(uint16_t* fb, FontManager* fm) {
     
     frame_buffer = fb;
     font_manager = fm;
+    
+    // Initialize image manager - ADD THIS
+    if (!image_manager.begin(fb, LCD_H_RES, LCD_V_RES)) {
+        return false;
+    }
+    
     return true;
 }
 
@@ -390,4 +396,48 @@ bool Graphics::isValidCoordinate(int16_t x, int16_t y) const {
 
 void Graphics::setPixelUnsafe(int16_t x, int16_t y, uint16_t color) {
     frame_buffer[y * LCD_H_RES + x] = color;
+}
+
+// Image drawing functions
+void Graphics::drawImage(int16_t x, int16_t y, const Image& image) {
+    image_manager.drawImage(x, y, image);
+}
+
+void Graphics::drawImage(int16_t x, int16_t y, const Image& image, const ImageDrawOptions& options) {
+    image_manager.drawImage(x, y, image, options);
+}
+
+void Graphics::drawRGB565(int16_t x, int16_t y, uint16_t width, uint16_t height, const uint16_t* data) {
+    image_manager.drawRGB565(x, y, width, height, data);
+}
+
+void Graphics::drawRGB565(int16_t x, int16_t y, uint16_t width, uint16_t height, const uint16_t* data, uint16_t transparent_color) {
+    image_manager.drawRGB565(x, y, width, height, data, transparent_color);
+}
+
+void Graphics::drawBitmap(int16_t x, int16_t y, uint16_t width, uint16_t height, const uint8_t* bitmap, uint16_t fg_color, uint16_t bg_color) {
+    image_manager.drawBitmap(x, y, width, height, bitmap, fg_color, bg_color);
+}
+
+void Graphics::drawBitmap(int16_t x, int16_t y, uint16_t width, uint16_t height, const uint8_t* bitmap, uint16_t fg_color) {
+    image_manager.drawBitmap(x, y, width, height, bitmap, fg_color);
+}
+
+void Graphics::drawImageScaled(int16_t x, int16_t y, const Image& image, float scale_x, float scale_y) {
+    image_manager.drawImageScaled(x, y, image, scale_x, scale_y);
+}
+
+void Graphics::enableColorCorrection(bool enable) {
+    correction_enabled = enable;
+}
+
+void Graphics::applyColorCorrection() {
+    if (correction_enabled && frame_buffer) {
+        color_correction.correctBuffer(frame_buffer, LCD_H_RES * LCD_V_RES);
+    }
+}
+
+void Graphics::setDisplayTemperature(int8_t temp) {
+    color_correction.setTemperature(temp);
+    enableColorCorrection(true);
 }
